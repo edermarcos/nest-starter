@@ -23,11 +23,12 @@ import { User } from './entities/user.entity';
         return {
           secret: configService.get('JWT_SECRET'),
           signOptions: {
-            expiresIn: '2h',
+            expiresIn: '1d',
           },
         };
       },
     }),
   ],
+  exports: [JwtStrategy, TypeOrmModule, PassportModule, JwtModule],
 })
 export class UsersModule {}

@@ -1,15 +1,15 @@
-import { Product } from 'src/products/entities/product.entity';
+import { User } from '../../users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('users')
-export class User {
+@Entity('products')
+export class Product {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -20,37 +20,28 @@ export class User {
 
   @Column({
     type: 'text',
-    name: 'last_name',
   })
-  lastName: string;
+  description: string;
+
+  @Column({
+    type: 'float',
+  })
+  price: number;
 
   @Column({
     type: 'text',
-    unique: true,
+    nullable: true,
   })
-  email: string;
+  image: string;
 
   @Column({
-    type: 'text',
-    select: false,
+    type: 'int',
+    default: 1,
   })
-  password: string;
+  stock: number;
 
-  @Column({
-    default: true,
-    name: 'is_active',
-  })
-  isActive: boolean;
-
-  @OneToMany(() => Product, (product) => product.user)
-  products: Product[];
-
-  @Column({
-    type: 'text',
-    array: true,
-    default: ['user'],
-  })
-  roles: string[];
+  @ManyToOne(() => User, (user) => user.products, { eager: true })
+  user: User;
 
   @CreateDateColumn({
     name: 'created_at',
@@ -62,4 +53,8 @@ export class User {
     nullable: true,
   })
   updatedAt: Date;
+
+  beforeUpdate() {
+    this.updatedAt = new Date();
+  }
 }
