@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Product } from 'src/products/entities/product.entity';
 import {
   Column,
@@ -13,23 +14,27 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ApiProperty({ example: 'John' })
   @Column({
     type: 'text',
   })
   name: string;
 
+  @ApiProperty({ example: 'Doe' })
   @Column({
     type: 'text',
     name: 'last_name',
   })
   lastName: string;
 
+  @ApiProperty({ example: 'user@gmail.com' })
   @Column({
     type: 'text',
     unique: true,
   })
   email: string;
 
+  @ApiProperty({ example: '86D8!IltUj6v' })
   @Column({
     type: 'text',
     select: false,

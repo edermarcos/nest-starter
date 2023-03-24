@@ -2,6 +2,10 @@ export interface JwtPayload {
   id: string;
 }
 
+export interface ILogin {
+  token: string;
+}
+
 export enum ValidRoles {
   admin = 'admin',
   su = 'super-user',

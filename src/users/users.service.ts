@@ -12,6 +12,7 @@ import { CreateUserDto, UpdateUserDto, LogInDto } from './dto';
 import { User } from './entities/user.entity';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { handleDBExceptions, maxPagesPerRequest } from 'src/common/helpers';
+import { ILogin } from './interfaces';
 
 @Injectable()
 export class UsersService {
@@ -38,11 +39,11 @@ export class UsersService {
     }
   }
 
-  async logIn(userLoginDto: LogInDto) {
+  async logIn(userLoginDto: LogInDto): Promise<ILogin> {
     const { email, password } = userLoginDto;
     const user = await this.usersRepository.findOne({
       where: { email },
-      select: ['id', 'password'],
+      select: ['id', 'password', 'email'],
     });
 
     if (!user) {
@@ -59,10 +60,7 @@ export class UsersService {
   }
 
   testToken(user: User) {
-    return {
-      ...user,
-      status: 'OK',
-    };
+    return user;
   }
 
   async findAll(pagination: PaginationDto) {
@@ -121,6 +119,7 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    return await this.usersRepository.delete(id);
+    const entity = await this.findOne(id);
+    return await this.usersRepository.delete(entity.id);
   }
 }

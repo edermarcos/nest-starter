@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsNotEmpty,
@@ -8,10 +9,12 @@ import {
 } from 'class-validator';
 
 export class LogInDto {
+  @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  readonly email: string;
 
+  @ApiProperty()
   @IsString()
   @MinLength(8)
   @MaxLength(20)
@@ -19,5 +22,5 @@ export class LogInDto {
     message:
       'The password must contain at least one uppercase letter, one lowercase letter, and one number or special character.',
   })
-  password: string;
+  readonly password: string;
 }
