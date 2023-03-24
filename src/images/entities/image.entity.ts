@@ -11,10 +11,10 @@ export class Image {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  // @Column({
-  //   type: 'text',
-  // })
-  // entityId: string;
+  @Column({
+    type: 'text',
+  })
+  fileName: string;
 
   @CreateDateColumn({
     name: 'created_at',

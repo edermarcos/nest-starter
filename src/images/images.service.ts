@@ -1,10 +1,12 @@
 import { handleDBExceptions } from 'src/common/helpers';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
 import { CreateImageDto } from './dto/create-image.dto';
 import { Image } from './entities/image.entity';
+import { join } from 'path';
+import { existsSync } from 'fs';
 
 @Injectable()
 export class ImagesService {
@@ -29,10 +31,28 @@ export class ImagesService {
   }
 
   async findOne(id: string) {
-    return this.imageRepository.findOneBy({ id });
+    const entity = await this.imageRepository.findOneBy({ id });
+
+    if (!entity) {
+      throw new NotFoundException(`Image with id ${id} not found`);
+    }
+
+    return entity;
   }
 
   async remove(id: string) {
-    return this.imageRepository.delete(id);
+    const entity = await this.findOne(id);
+    const result = await this.imageRepository.delete(entity.id);
+    return result.affected > 0;
+  }
+
+  getPathImage(imageName: string): string {
+    const path = join(__dirname, '..', '..', 'static', 'images', imageName);
+
+    if (!existsSync(path)) {
+      throw new NotFoundException('Image not found');
+    }
+
+    return path;
   }
 }

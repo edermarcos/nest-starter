@@ -1,16 +1,2 @@
-import {
-  BadRequestException,
-  InternalServerErrorException,
-} from '@nestjs/common';
-
-export const handleDBExceptions = (error: any) => {
-  console.log('[>> handleDBExceptions <<]:', error);
-  const { code, detail } = error;
-  if (code === '23505') {
-    throw new BadRequestException(detail);
-  }
-
-  throw new InternalServerErrorException();
-};
-
-export const maxPagesPerRequest = 15;
+export { imageFilter, fileNamer } from './multer';
+export { handleDBExceptions, maxPagesPerRequest } from './data-service';
