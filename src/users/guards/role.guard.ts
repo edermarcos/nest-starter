@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { Injectable } from '@nestjs/common';
 
 import { META_ROLES } from '../interfaces';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -26,7 +27,7 @@ export class RolesGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const user = request.user;
+    const user: User = request.user;
     if (!user) {
       throw new BadRequestException('User not found');
     }
@@ -37,8 +38,9 @@ export class RolesGuard implements CanActivate {
       }
     }
 
+    const fullName = `${user.name} ${user.lastName}`;
     throw new ForbiddenException(
-      `User ${user.fullName} does not have permission to access this resource`,
+      `User ${fullName} does not have permission to access this resource`,
     );
   }
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
 
 import { LogInDto } from './log-in.dto';
 
@@ -13,4 +13,8 @@ export class CreateUserDto extends LogInDto {
   @IsString()
   @IsNotEmpty()
   readonly lastName: string;
+
+  @IsString({ each: true })
+  @IsOptional()
+  readonly roles: string[];
 }

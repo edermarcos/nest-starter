@@ -16,6 +16,7 @@ import { ProductsService } from './products.service';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { Auth, GetUser } from 'src/users/decorators';
 import { User } from 'src/users/entities/user.entity';
+import { ERoles } from 'src/users/interfaces';
 
 @ApiBearerAuth()
 @ApiTags('Products')
@@ -24,22 +25,25 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  @Auth()
+  @Auth(ERoles.PRODUCT_C, ERoles.ADMIN, ERoles.PRODUCT_ADMIN)
   create(@Body() createProductDto: CreateProductDto, @GetUser() user: User) {
     return this.productsService.create(createProductDto, user);
   }
 
   @Get()
-  findAll(@Query() pagination: PaginationDto) {
-    return this.productsService.findAll(pagination);
+  @Auth(ERoles.PRODUCT_R, ERoles.ADMIN, ERoles.PRODUCT_ADMIN)
+  findAll(@Query() options: PaginationDto) {
+    return this.productsService.findAll(options);
   }
 
   @Get(':id')
+  @Auth(ERoles.PRODUCT_R, ERoles.ADMIN, ERoles.PRODUCT_ADMIN)
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.findOne(id);
   }
 
   @Patch(':id')
+  @Auth(ERoles.PRODUCT_U, ERoles.ADMIN, ERoles.PRODUCT_ADMIN)
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateProductDto: UpdateProductDto,
@@ -48,6 +52,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @Auth(ERoles.PRODUCT_D, ERoles.ADMIN, ERoles.PRODUCT_ADMIN)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.remove(id);
   }

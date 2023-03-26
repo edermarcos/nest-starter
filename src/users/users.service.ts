@@ -6,13 +6,15 @@ import {
 import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
 
 import { CreateUserDto, UpdateUserDto, LogInDto } from './dto';
-import { User } from './entities/user.entity';
-import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { handleDBExceptions, maxPagesPerRequest } from 'src/common/helpers';
-import { ILogin } from './interfaces';
+import { ERoles, ILogin } from './interfaces';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { SeedDto } from './dto/seed.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
@@ -121,5 +123,43 @@ export class UsersService {
   async remove(id: string) {
     const entity = await this.findOne(id);
     return await this.usersRepository.delete(entity.id);
+  }
+
+  private createRandomUser() {
+    const roles = Object.keys(ERoles).filter((role) => role !== ERoles.USER);
+    return {
+      email: faker.internet.email().toLowerCase(),
+      name: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      roles: [ERoles.USER, faker.helpers.arrayElement(roles)],
+    };
+  }
+
+  private async deleteTable() {
+    try {
+      await this.usersRepository
+        .createQueryBuilder()
+        .delete()
+        .where({})
+        .execute();
+    } catch (error) {
+      handleDBExceptions(error);
+    }
+  }
+
+  async populate(options: SeedDto) {
+    await this.deleteTable();
+
+    const { password: pwd } = options;
+    const password = bcrypt.hashSync(pwd, 10);
+    const randomUsers = Array.from({ length: 15 }).map(() => ({
+      ...this.createRandomUser(),
+      password,
+    }));
+    const users = await this.usersRepository.save(randomUsers);
+    return users.map((user) => {
+      delete user.password;
+      return user;
+    });
   }
 }

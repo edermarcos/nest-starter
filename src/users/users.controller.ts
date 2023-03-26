@@ -15,8 +15,9 @@ import { CreateUserDto, UpdateUserDto, LogInDto } from './dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { Auth, GetUser } from './decorators';
 import { UsersService } from './users.service';
-import { ValidRoles } from './interfaces';
+import { ERoles } from './interfaces';
 import { User } from './entities/user.entity';
+import { SeedDto } from './dto/seed.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -33,7 +34,7 @@ export class UsersController {
   })
   @Get('test-auth')
   @ApiBearerAuth()
-  @Auth(ValidRoles.user, ValidRoles.admin)
+  @Auth(ERoles.ADMIN)
   auth(@GetUser() user: User) {
     return this.usersService.testToken(user);
   }
@@ -43,23 +44,28 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @Get('seed')
+  populateTable(@Query() options: SeedDto) {
+    return this.usersService.populate(options);
+  }
+
   @Get()
   @ApiBearerAuth()
-  @Auth(ValidRoles.user)
+  @Auth(ERoles.ADMIN)
   findAll(@Query() pagination: PaginationDto) {
     return this.usersService.findAll(pagination);
   }
 
   @Get(':id')
   @ApiBearerAuth()
-  @Auth(ValidRoles.user)
+  @Auth(ERoles.ADMIN)
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.usersService.findOne(id);
   }
 
   @Patch(':id')
   @ApiBearerAuth()
-  @Auth(ValidRoles.user)
+  @Auth(ERoles.ADMIN)
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -69,7 +75,7 @@ export class UsersController {
 
   @Delete(':id')
   @ApiBearerAuth()
-  @Auth(ValidRoles.user, ValidRoles.admin)
+  @Auth(ERoles.USER, ERoles.ADMIN)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.usersService.remove(id);
   }

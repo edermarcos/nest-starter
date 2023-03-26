@@ -17,11 +17,11 @@ import { Response } from 'express';
 
 import { ImagesService } from './images.service';
 import { fileNamer, imageFilter } from 'src/common/helpers';
-import { ValidRoles } from 'src/users/interfaces';
+import { ERoles } from 'src/users/interfaces';
 import { Auth } from 'src/users/decorators';
 
 @ApiBearerAuth()
-@Auth(ValidRoles.user)
+@Auth(ERoles.USER)
 @ApiTags('Images')
 @Controller('images')
 export class ImagesController {
